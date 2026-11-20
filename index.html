@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Трекер калорий</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <div class="app">
@@ -44,6 +45,34 @@
         <div class="macro">
           <span class="macro-value" id="carbsVal">0</span>
           <span class="macro-label">Углеводы (г)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 📊 График по неделям -->
+    <section class="chart-section">
+      <div class="chart-header">
+        <h2>📊 Последняя неделя</h2>
+        <div class="chart-legend">
+          <span class="legend-item"><i class="dot dot-cal"></i>Калории</span>
+          <span class="legend-item"><i class="dot dot-goal"></i>Цель</span>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="weekChart"></canvas>
+      </div>
+      <div class="chart-stats">
+        <div class="stat">
+          <span class="stat-value" id="avgCal">0</span>
+          <span class="stat-label">Среднее/день</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="totalCal">0</span>
+          <span class="stat-label">Всего за неделю</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="daysOnTarget">0/7</span>
+          <span class="stat-label">В рамках цели</span>
         </div>
       </div>
     </section>
