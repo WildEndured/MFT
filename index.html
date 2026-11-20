@@ -3,111 +3,214 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Трекер калорий</title>
+  <title>Фитнес-трекер</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <div class="app">
     <header>
-      <h1>🍎 Трекер калорий</h1>
-      <p class="subtitle">Следи за питанием легко</p>
+      <h1>💪 Фитнес-трекер</h1>
+      <p class="subtitle">Калории + Тренировки в одном месте</p>
     </header>
 
-    <!-- Панель даты -->
-    <section class="date-bar">
-      <button id="prevDay" class="icon-btn">◀</button>
-      <input type="date" id="dateInput">
-      <button id="nextDay" class="icon-btn">▶</button>
-    </section>
+    <!-- Главная навигация -->
+    <nav class="main-nav">
+      <button class="main-tab active" data-section="calories">🍎 Калории</button>
+      <button class="main-tab" data-section="workouts">🏋️ Тренировки</button>
+    </nav>
 
-    <!-- Сводка за день -->
-    <section class="summary">
-      <div class="calories-circle">
-        <svg viewBox="0 0 120 120">
-          <circle class="bg" cx="60" cy="60" r="54"></circle>
-          <circle class="progress" cx="60" cy="60" r="54" id="progressCircle"></circle>
-        </svg>
-        <div class="calories-text">
-          <span id="consumed">0</span>
-          <small>/ <span id="goal">2000</span> ккал</small>
-        </div>
-      </div>
-      <div class="macros">
-        <div class="macro">
-          <span class="macro-value" id="proteinVal">0</span>
-          <span class="macro-label">Белки (г)</span>
-        </div>
-        <div class="macro">
-          <span class="macro-value" id="fatVal">0</span>
-          <span class="macro-label">Жиры (г)</span>
-        </div>
-        <div class="macro">
-          <span class="macro-value" id="carbsVal">0</span>
-          <span class="macro-label">Углеводы (г)</span>
-        </div>
-      </div>
-    </section>
+    <!-- ===== СЕКЦИЯ КАЛОРИЙ ===== -->
+    <div id="calories-section" class="section active">
+      <!-- Панель даты -->
+      <section class="date-bar">
+        <button id="prevDay" class="icon-btn">◀</button>
+        <input type="date" id="dateInput">
+        <button id="nextDay" class="icon-btn">▶</button>
+      </section>
 
-    <!-- 📊 График по неделям -->
-    <section class="chart-section">
-      <div class="chart-header">
-        <h2>📊 Последняя неделя</h2>
-        <div class="chart-legend">
-          <span class="legend-item"><i class="dot dot-cal"></i>Калории</span>
-          <span class="legend-item"><i class="dot dot-goal"></i>Цель</span>
+      <!-- Сводка за день -->
+      <section class="summary">
+        <div class="calories-circle">
+          <svg viewBox="0 0 120 120">
+            <circle class="bg" cx="60" cy="60" r="54"></circle>
+            <circle class="progress" cx="60" cy="60" r="54" id="progressCircle"></circle>
+          </svg>
+          <div class="calories-text">
+            <span id="consumed">0</span>
+            <small>/ <span id="goal">2000</span> ккал</small>
+          </div>
         </div>
-      </div>
-      <div class="chart-wrapper">
-        <canvas id="weekChart"></canvas>
-      </div>
-      <div class="chart-stats">
-        <div class="stat">
-          <span class="stat-value" id="avgCal">0</span>
-          <span class="stat-label">Среднее/день</span>
+        <div class="macros">
+          <div class="macro">
+            <span class="macro-value" id="proteinVal">0</span>
+            <span class="macro-label">Белки (г)</span>
+          </div>
+          <div class="macro">
+            <span class="macro-value" id="fatVal">0</span>
+            <span class="macro-label">Жиры (г)</span>
+          </div>
+          <div class="macro">
+            <span class="macro-value" id="carbsVal">0</span>
+            <span class="macro-label">Углеводы (г)</span>
+          </div>
         </div>
-        <div class="stat">
-          <span class="stat-value" id="totalCal">0</span>
-          <span class="stat-label">Всего за неделю</span>
+      </section>
+
+      <!-- График по неделям -->
+      <section class="chart-section">
+        <div class="chart-header">
+          <h2>📊 Последняя неделя</h2>
+          <div class="chart-legend">
+            <span class="legend-item"><i class="dot dot-cal"></i>Калории</span>
+            <span class="legend-item"><i class="dot dot-goal"></i>Цель</span>
+          </div>
         </div>
-        <div class="stat">
-          <span class="stat-value" id="daysOnTarget">0/7</span>
-          <span class="stat-label">В рамках цели</span>
+        <div class="chart-wrapper">
+          <canvas id="weekChart"></canvas>
         </div>
-      </div>
-    </section>
+        <div class="chart-stats">
+          <div class="stat">
+            <span class="stat-value" id="avgCal">0</span>
+            <span class="stat-label">Среднее/день</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="totalCal">0</span>
+            <span class="stat-label">Всего за неделю</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="daysOnTarget">0/7</span>
+            <span class="stat-label">В рамках цели</span>
+          </div>
+        </div>
+      </section>
 
-    <!-- Форма добавления -->
-    <section class="add-form">
-      <h2>Добавить продукт</h2>
-      <input type="text" id="foodName" placeholder="Название (напр. Овсянка)">
-      <div class="inputs-row">
-        <input type="number" id="calories" placeholder="Ккал" min="0">
-        <input type="number" id="protein" placeholder="Б" min="0">
-        <input type="number" id="fat" placeholder="Ж" min="0">
-        <input type="number" id="carbs" placeholder="У" min="0">
-      </div>
-      <button id="addBtn" class="primary-btn">+ Добавить</button>
-    </section>
+      <!-- Форма добавления -->
+      <section class="add-form">
+        <h2>Добавить продукт</h2>
+        <input type="text" id="foodName" placeholder="Название (напр. Овсянка)">
+        <div class="inputs-row">
+          <input type="number" id="calories" placeholder="Ккал" min="0">
+          <input type="number" id="protein" placeholder="Б" min="0">
+          <input type="number" id="fat" placeholder="Ж" min="0">
+          <input type="number" id="carbs" placeholder="У" min="0">
+        </div>
+        <button id="addBtn" class="primary-btn">+ Добавить</button>
+      </section>
 
-    <!-- Быстрые продукты -->
-    <section class="quick-add">
-      <h3>Популярные продукты</h3>
-      <div class="quick-list" id="quickList"></div>
-    </section>
+      <!-- Быстрые продукты -->
+      <section class="quick-add">
+        <h3>Популярные продукты</h3>
+        <div class="quick-list" id="quickList"></div>
+      </section>
 
-    <!-- Список приёмов пищи -->
-    <section class="meals-list">
-      <h2>Сегодня</h2>
-      <ul id="mealsList"></ul>
-    </section>
+      <!-- Список приёмов пищи -->
+      <section class="meals-list">
+        <h2>Сегодня</h2>
+        <ul id="mealsList"></ul>
+      </section>
+    </div>
 
-    <!-- Настройки -->
+    <!-- ===== СЕКЦИЯ ТРЕНИРОВОК ===== -->
+    <div id="workouts-section" class="section">
+      <!-- Панель даты -->
+      <section class="date-bar">
+        <button id="prevDayW" class="icon-btn">◀</button>
+        <input type="date" id="dateInputW">
+        <button id="nextDayW" class="icon-btn">▶</button>
+      </section>
+
+      <!-- Сводка тренировок -->
+      <section class="summary">
+        <div class="workout-circle">
+          <svg viewBox="0 0 120 120">
+            <circle class="bg" cx="60" cy="60" r="54"></circle>
+            <circle class="progress" cx="60" cy="60" r="54" id="workoutProgressCircle"></circle>
+          </svg>
+          <div class="workout-text">
+            <span id="workoutDuration">0</span>
+            <small>минут</small>
+          </div>
+        </div>
+        <div class="workout-stats">
+          <div class="workout-stat">
+            <span class="workout-stat-value" id="totalVolume">0</span>
+            <span class="workout-stat-label">Объём (кг)</span>
+          </div>
+          <div class="workout-stat">
+            <span class="workout-stat-value" id="totalSets">0</span>
+            <span class="workout-stat-label">Подходов</span>
+          </div>
+          <div class="workout-stat">
+            <span class="workout-stat-value" id="caloriesBurned">0</span>
+            <span class="workout-stat-label">Сожжено ккал</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- График тренировок -->
+      <section class="chart-section">
+        <div class="chart-header">
+          <h2>📊 Активность за неделю</h2>
+          <div class="chart-legend">
+            <span class="legend-item"><i class="dot dot-workout"></i>Минуты</span>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="workoutChart"></canvas>
+        </div>
+        <div class="chart-stats">
+          <div class="stat">
+            <span class="stat-value" id="weekWorkouts">0</span>
+            <span class="stat-label">Тренировок</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="weekMinutes">0</span>
+            <span class="stat-label">Минут всего</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="weekVolume">0</span>
+            <span class="stat-label">Объём (кг)</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Форма добавления тренировки -->
+      <section class="add-form">
+        <h2>Добавить тренировку</h2>
+        <input type="text" id="workoutName" placeholder="Название (напр. Жим лёжа)">
+        <div class="inputs-row">
+          <input type="number" id="sets" placeholder="Подходы" min="0">
+          <input type="number" id="reps" placeholder="Повторения" min="0">
+          <input type="number" id="weight" placeholder="Вес (кг)" min="0" step="0.5">
+          <input type="number" id="duration" placeholder="Длит. (мин)" min="0">
+        </div>
+        <button id="addWorkoutBtn" class="primary-btn">+ Добавить упражнение</button>
+      </section>
+
+      <!-- Быстрые упражнения -->
+      <section class="quick-add">
+        <h3>Популярные упражнения</h3>
+        <div class="quick-list" id="quickExercises"></div>
+      </section>
+
+      <!-- Список упражнений -->
+      <section class="exercises-list">
+        <h2>Сегодня</h2>
+        <ul id="exercisesList"></ul>
+      </section>
+    </div>
+
+    <!-- Общие настройки -->
     <section class="settings">
       <h2>⚙️ Настройки</h2>
       <label>
-        Дневная цель (ккал):
+        Дневная цель калорий (ккал):
         <input type="number" id="goalInput" min="500" max="10000">
+      </label>
+      <label>
+        Целевая длительность тренировки (мин):
+        <input type="number" id="workoutGoalInput" min="10" max="300">
       </label>
       <div class="settings-buttons">
         <button id="exportBtn" class="secondary-btn">📥 Экспорт</button>
