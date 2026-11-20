@@ -35,6 +35,44 @@ header h1 {
   margin-top: 5px;
 }
 
+/* Главная навигация */
+.main-nav {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  background: #f5f7ff;
+  padding: 5px;
+  border-radius: 12px;
+}
+.main-tab {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  color: #666;
+}
+.main-tab.active {
+  background: white;
+  color: #667eea;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.main-tab:hover:not(.active) {
+  background: rgba(255,255,255,0.5);
+}
+
+/* Секции */
+.section {
+  display: none;
+}
+.section.active {
+  display: block;
+}
+
 /* Дата */
 .date-bar {
   display: flex;
@@ -62,7 +100,7 @@ header h1 {
 }
 .icon-btn:hover { background: #d8d8e8; }
 
-/* Сводка */
+/* Сводка калорий */
 .summary {
   display: flex;
   flex-direction: column;
@@ -73,38 +111,38 @@ header h1 {
   border-radius: 15px;
   margin-bottom: 20px;
 }
-.calories-circle {
+.calories-circle, .workout-circle {
   position: relative;
   width: 160px;
   height: 160px;
 }
-.calories-circle svg {
+.calories-circle svg, .workout-circle svg {
   transform: rotate(-90deg);
   width: 100%;
   height: 100%;
 }
-.calories-circle circle {
+.calories-circle circle, .workout-circle circle {
   fill: none;
   stroke-width: 10;
 }
-.calories-circle .bg { stroke: #e8e8f0; }
-.calories-circle .progress {
+.calories-circle .bg, .workout-circle .bg { stroke: #e8e8f0; }
+.calories-circle .progress, .workout-circle .progress {
   stroke-linecap: round;
   transition: stroke-dashoffset 0.5s ease;
 }
-.calories-text {
+.calories-text, .workout-text {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
 }
-.calories-text span {
+.calories-text span, .workout-text span {
   display: block;
   font-size: 32px;
   font-weight: bold;
   color: #4a4a8a;
 }
-.calories-text small {
+.calories-text small, .workout-text small {
   color: #888;
   font-size: 13px;
 }
@@ -129,7 +167,28 @@ header h1 {
   color: #888;
 }
 
-/* 📊 График */
+/* Сводка тренировок */
+.workout-stats {
+  display: flex;
+  gap: 20px;
+  justify-content: space-around;
+  width: 100%;
+}
+.workout-stat {
+  text-align: center;
+}
+.workout-stat-value {
+  display: block;
+  font-size: 22px;
+  font-weight: bold;
+  color: #4a4a8a;
+}
+.workout-stat-label {
+  font-size: 12px;
+  color: #888;
+}
+
+/* Графики */
 .chart-section {
   background: linear-gradient(135deg, #f5f7ff, #fff);
   border-radius: 15px;
@@ -165,6 +224,7 @@ header h1 {
   display: inline-block;
 }
 .dot-cal { background: #667eea; }
+.dot-workout { background: #4caf50; }
 .dot-goal {
   background: transparent;
   border: 2px dashed #f44336;
@@ -199,7 +259,7 @@ header h1 {
   margin-top: 2px;
 }
 
-/* Форма */
+/* Формы */
 section { margin-bottom: 20px; }
 h2 {
   font-size: 18px;
@@ -260,7 +320,7 @@ h3 {
 }
 .danger-btn:hover { background: #ffc8c8; }
 
-/* Быстрые продукты */
+/* Быстрые добавления */
 .quick-list {
   display: flex;
   flex-wrap: wrap;
@@ -280,11 +340,11 @@ h3 {
   color: white;
 }
 
-/* Список приёмов пищи */
-.meals-list ul {
+/* Списки */
+.meals-list ul, .exercises-list ul {
   list-style: none;
 }
-.meal-item {
+.meal-item, .exercise-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -293,19 +353,19 @@ h3 {
   border-radius: 10px;
   margin-bottom: 8px;
 }
-.meal-info {
+.meal-info, .exercise-info {
   flex: 1;
 }
-.meal-name {
+.meal-name, .exercise-name {
   font-weight: 600;
   color: #333;
 }
-.meal-details {
+.meal-details, .exercise-details {
   font-size: 12px;
   color: #888;
   margin-top: 3px;
 }
-.meal-cal {
+.meal-cal, .exercise-volume {
   font-weight: bold;
   color: #667eea;
   margin-right: 10px;
@@ -357,9 +417,9 @@ footer {
 
 @media (max-width: 480px) {
   .inputs-row { grid-template-columns: repeat(2, 1fr); }
-  .macros { gap: 10px; }
-  .macro-value { font-size: 18px; }
+  .macros, .workout-stats { gap: 10px; }
+  .macro-value, .workout-stat-value { font-size: 18px; }
   .chart-wrapper { height: 180px; }
   .stat-value { font-size: 16px; }
   .chart-header { flex-direction: column; align-items: flex-start; }
-  }
+}
