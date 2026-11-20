@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Трекер калорий</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>🍎 Трекер калорий</h1>
+      <p class="subtitle">Следи за питанием легко</p>
+    </header>
+
+    <!-- Панель даты -->
+    <section class="date-bar">
+      <button id="prevDay" class="icon-btn">◀</button>
+      <input type="date" id="dateInput">
+      <button id="nextDay" class="icon-btn">▶</button>
+    </section>
+
+    <!-- Сводка за день -->
+    <section class="summary">
+      <div class="calories-circle">
+        <svg viewBox="0 0 120 120">
+          <circle class="bg" cx="60" cy="60" r="54"></circle>
+          <circle class="progress" cx="60" cy="60" r="54" id="progressCircle"></circle>
+        </svg>
+        <div class="calories-text">
+          <span id="consumed">0</span>
+          <small>/ <span id="goal">2000</span> ккал</small>
+        </div>
+      </div>
+      <div class="macros">
+        <div class="macro">
+          <span class="macro-value" id="proteinVal">0</span>
+          <span class="macro-label">Белки (г)</span>
+        </div>
+        <div class="macro">
+          <span class="macro-value" id="fatVal">0</span>
+          <span class="macro-label">Жиры (г)</span>
+        </div>
+        <div class="macro">
+          <span class="macro-value" id="carbsVal">0</span>
+          <span class="macro-label">Углеводы (г)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Форма добавления -->
+    <section class="add-form">
+      <h2>Добавить продукт</h2>
+      <input type="text" id="foodName" placeholder="Название (напр. Овсянка)">
+      <div class="inputs-row">
+        <input type="number" id="calories" placeholder="Ккал" min="0">
+        <input type="number" id="protein" placeholder="Б" min="0">
+        <input type="number" id="fat" placeholder="Ж" min="0">
+        <input type="number" id="carbs" placeholder="У" min="0">
+      </div>
+      <button id="addBtn" class="primary-btn">+ Добавить</button>
+    </section>
+
+    <!-- Быстрые продукты -->
+    <section class="quick-add">
+      <h3>Популярные продукты</h3>
+      <div class="quick-list" id="quickList"></div>
+    </section>
+
+    <!-- Список приёмов пищи -->
+    <section class="meals-list">
+      <h2>Сегодня</h2>
+      <ul id="mealsList"></ul>
+    </section>
+
+    <!-- Настройки -->
+    <section class="settings">
+      <h2>⚙️ Настройки</h2>
+      <label>
+        Дневная цель (ккал):
+        <input type="number" id="goalInput" min="500" max="10000">
+      </label>
+      <div class="settings-buttons">
+        <button id="exportBtn" class="secondary-btn">📥 Экспорт</button>
+        <button id="importBtn" class="secondary-btn">📤 Импорт</button>
+        <input type="file" id="importFile" accept=".json" hidden>
+        <button id="clearBtn" class="danger-btn">🗑 Очистить всё</button>
+      </div>
+    </section>
+
+    <footer>
+      <p>Данные хранятся локально в вашем браузере 💾</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
