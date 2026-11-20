@@ -2,6 +2,7 @@
 const STORAGE_KEY = 'calorieTrackerData';
 let data = loadData();
 let currentDate = todayStr();
+let weekChart = null;
 
 const quickFoods = [
   { name: 'Овсянка', cal: 150, p: 5, f: 3, c: 27 },
@@ -20,6 +21,7 @@ function init() {
   document.getElementById('goalInput').value = data.goal;
   renderQuickFoods();
   render();
+  renderChart();
   bindEvents();
 }
 
@@ -35,6 +37,7 @@ function bindEvents() {
     data.goal = parseInt(e.target.value) || 2000;
     saveData();
     render();
+    renderChart();
   });
   document.getElementById('exportBtn').addEventListener('click', exportData);
   document.getElementById('importBtn').addEventListener('click', () => {
@@ -43,7 +46,6 @@ function bindEvents() {
   document.getElementById('importFile').addEventListener('change', importData);
   document.getElementById('clearBtn').addEventListener('click', clearAll);
 
-  // Enter для добавления
   ['foodName','calories','protein','fat','carbs'].forEach(id => {
     document.getElementById(id).addEventListener('keypress', e => {
       if (e.key === 'Enter') addMeal();
@@ -73,6 +75,19 @@ function saveData() {
 function getDayMeals() {
   return data.meals[currentDate] || [];
 }
+function getDayCalories(dateStr) {
+  const meals = data.meals[dateStr] || [];
+  return meals.reduce((sum, m) => sum + m.cal, 0);
+}
+function formatDateLabel(dateStr) {
+  const d = new Date(dateStr);
+  const days = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  return days[d.getDay()];
+}
+function formatShortDate(dateStr) {
+  const d = new Date(dateStr);
+  return `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}`;
+}
 
 // ===== Действия =====
 function addMeal() {
@@ -96,6 +111,7 @@ function addMeal() {
 
   saveData();
   render();
+  renderChart();
   clearForm();
 }
 
@@ -114,6 +130,7 @@ function deleteMeal(id) {
   if (data.meals[currentDate].length === 0) delete data.meals[currentDate];
   saveData();
   render();
+  renderChart();
 }
 
 function clearForm() {
@@ -142,6 +159,7 @@ function importData(e) {
       saveData();
       document.getElementById('goalInput').value = data.goal;
       render();
+      renderChart();
       alert('Данные импортированы!');
     } catch { alert('Ошибка файла'); }
   };
@@ -154,6 +172,138 @@ function clearAll() {
   saveData();
   document.getElementById('goalInput').value = 2000;
   render();
+  renderChart();
+}
+
+// ===== 📊 График =====
+function renderChart() {
+  // Собираем данные за последние 7 дней (включая сегодня)
+  const labels = [];
+  const calories = [];
+  const today = new Date();
+  let total = 0;
+  let daysOnTarget = 0;
+
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    const cal = getDayCalories(dateStr);
+    labels.push(`${formatDateLabel(dateStr)}\n${formatShortDate(dateStr)}`);
+    calories.push(cal);
+    total += cal;
+    if (cal > 0 && cal <= data.goal) daysOnTarget++;
+  }
+
+  const avg = Math.round(total / 7);
+
+  // Обновляем статистику
+  document.getElementById('avgCal').textContent = avg;
+  document.getElementById('totalCal').textContent = total.toLocaleString('ru-RU');
+  document.getElementById('daysOnTarget').textContent = `${daysOnTarget}/7`;
+
+  // Создаём или обновляем график
+  const ctx = document.getElementById('weekChart').getContext('2d');
+
+  // Градиент для столбцов
+  const gradient = ctx.createLinearGradient(0, 0, 0, 220);
+  gradient.addColorStop(0, 'rgba(102, 126, 234, 0.9)');
+  gradient.addColorStop(1, 'rgba(118, 75, 162, 0.6)');
+
+  const chartData = {
+    labels: labels,
+    datasets: [
+      {
+        label: 'Калории',
+        data: calories,
+        backgroundColor: gradient,
+        borderColor: '#667eea',
+        borderWidth: 1,
+        borderRadius: 8,
+        borderSkipped: false,
+      },
+      {
+        label: 'Цель',
+        data: Array(7).fill(data.goal),
+        type: 'line',
+        borderColor: '#f44336',
+        borderWidth: 2,
+        borderDash: [6, 4],
+        pointRadius: 0,
+        fill: false,
+        tension: 0,
+      }
+    ]
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: 'rgba(74, 74, 138, 0.95)',
+        padding: 12,
+        titleFont: { size: 13, weight: 'bold' },
+        bodyFont: { size: 13 },
+        cornerRadius: 8,
+        callbacks: {
+          title: (items) => {
+            const label = items[0].label;
+            return label.replace('\n', ' ');
+          },
+          label: (item) => {
+            if (item.datasetIndex === 0) {
+              return `  Калории: ${item.raw} ккал`;
+            }
+            return null;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: {
+          color: '#888',
+          font: { size: 11 },
+          maxRotation: 0,
+          callback: function(value, index) {
+            const parts = this.getLabelForValue(value).split('\n');
+            return parts;
+          }
+        }
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0,0,0,0.05)',
+          drawBorder: false,
+        },
+        ticks: {
+          color: '#888',
+          font: { size: 11 },
+          callback: (v) => v + ' ккал'
+        }
+      }
+    }
+  };
+
+  if (weekChart) {
+    weekChart.data = chartData;
+    weekChart.options = options;
+    weekChart.update();
+  } else {
+    weekChart = new Chart(ctx, {
+      type: 'bar',
+      data: chartData,
+      options: options
+    });
+  }
 }
 
 // ===== Рендер =====
@@ -176,7 +326,6 @@ function render() {
     c: acc.c + m.c
   }), { cal: 0, p: 0, f: 0, c: 0 });
 
-  // Круговой прогресс
   document.getElementById('consumed').textContent = Math.round(totals.cal);
   document.getElementById('goal').textContent = data.goal;
   const circle = document.getElementById('progressCircle');
@@ -185,16 +334,13 @@ function render() {
   circle.style.strokeDasharray = circumference;
   const percent = Math.min(totals.cal / data.goal, 1);
   circle.style.strokeDashoffset = circumference * (1 - percent);
-  // Цвет: зелёный → жёлтый → красный
   const color = percent < 0.8 ? '#4caf50' : percent < 1 ? '#ff9800' : '#f44336';
   circle.style.stroke = color;
 
-  // Макросы
   document.getElementById('proteinVal').textContent = totals.p.toFixed(1);
   document.getElementById('fatVal').textContent = totals.f.toFixed(1);
   document.getElementById('carbsVal').textContent = totals.c.toFixed(1);
 
-  // Список
   const list = document.getElementById('mealsList');
   if (meals.length === 0) {
     list.innerHTML = '<li class="empty">Пока нет записей за этот день</li>';
